@@ -1,68 +1,37 @@
-# Cleanfolio
+<h3 align="center">👋 Hi there! I'm Kiran Ojha</h3>
+<p align="center">
+  <a href="https://www.kojha.com.np">Website</a> •
+  <a href="https://www.instagram.com/kopticss">Instagram</a>
+</p>
 
-A clean and simple portfolio template built using React, if want a template built with HTML, CSS and JS then check out [Cleanfolio Minimal](https://github.com/rajshekhar26/cleanfolio-minimal).
+---
+✨ I'm a frontend engineer passionate about making the web accessible to everyone and advocating for building open and inclusive developer communities. 
 
-## Preview
+I love sharing my knowledge with others, and I plan on doing that through content creation on my Blog and Youtube channel. the blog in on the way and will be live very soon. I'm currently working for global course on demand company, enthu.com. When I'm not coding, you can find me geeking about photography and exploring different ways of documenting stories using photography.
 
-[![Imgur](https://imgur.com/FwDMNEM.gif)](https://rajshekhar26.github.io/cleanfolio)
 
-[See Live](https://rajshekhar26.github.io/cleanfolio)
+- 😄 My Pronouns: He/Him   
+- 💬 Ask me about: Svelte, React, NextJS, React Native, Mernstack, Jamstack, Building Career In Tech, Content Creation.
+- 🌱 I’m currently learning Rust, NestJS, Blockchain.
+- 📫 How to reach me: [@kopticss](https://www.instagram.com/kopticss)
+- ⚡ Fun fact: I consume guns n roses for breakfast.
 
-## Instructions
 
-### Setup
+<p align="center">
+<a href="https://app.daily.dev/kiranojhanp"><img src="https://api.daily.dev/devcards/945f6b6779e44475832d70475912d0a5.png?r=eje" width="400" alt="Kiran Ojha's Dev Card"/></a>
+  </p>
 
-```shell
-git clone https://github.com/rajshekhar26/cleanfolio
-cd cleanfolio
-```
+<!--
+**kiranojhanp/kiranojhanp** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
-If you use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) (optional) -
+Here are some ideas to get you started:
 
-```shell
-nvm install
-nvm use
-```
-
-Or -
-
-```shell
-fnm install
-fnm use
-```
-
-Install and run -
-
-```shell
-yarn
-yarn start
-```
-
-### How to use
-
-- Open `public/index.html` and replace -
-
-`<title>John Smith</title>` with `<title>Your Name</title>`.
-
-- Open `src/portfolio.js` and make changes.
-
-### Deployment
-
-- Go to `package.json` file and replace -
-
-`"homepage": "https://rajshekhar26.github.io/cleanfolio"`
-
-with `"homepage": "https://yourusername.github.io"`.
-
-- Push the changes.
-
-- Build and deploy -
-
-```shell
-yarn build
-yarn deploy
-```
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+- 🔭 I’m currently working on ...
+- 🌱 I’m currently learning ...
+- 👯 I’m looking to collaborate on ...
+- 🤔 I’m looking for help with ...
+- 💬 Ask me about ...
+- 📫 How to reach me: ...
+- 😄 Pronouns: ...
+- ⚡ Fun fact: ...
+-->
