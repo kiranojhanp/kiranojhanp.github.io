@@ -1,5 +1,5 @@
 .app {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.5;
   color: var(--clr-fg);
   background-color: var(--clr-bg);
@@ -56,7 +56,7 @@ main {
 }
 
 .link::before {
-  content: '';
+  content: "";
   display: inline;
   width: 0%;
   height: 0.2em;
@@ -105,7 +105,7 @@ main {
 }
 
 .btn--outline:before {
-  content: '';
+  content: "";
   position: absolute;
   background-color: var(--clr-primary);
   right: 100%;
