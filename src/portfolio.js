@@ -1,7 +1,7 @@
 const header = {
   // all the properties are optional - can be left empty or deleted
   homepage: "https://kiranojhanp.github.io",
-  title: "JS.",
+  title: "KO.",
 }
 
 const about = {
@@ -9,11 +9,11 @@ const about = {
   name: "Kiran Ojha",
   role: "Front End Engineer",
   description:
-    "✨ I'm a frontend engineer passionate about making the web accessible to everyone and advocating for building open and inclusive developer communities. I love sharing my knowledge with others, and I plan on doing that through content creation on my Blog and Youtube channel. the blog in on the way and will be live very soon. I'm currently working for global course on demand company, enthu.com. When I'm not coding, you can find me geeking about photography and exploring different ways of documenting stories using photography.",
+    "✨ I'm a frontend engineer passionate about making the web accessible to everyone. I'm currently working for Uk based blockchain startup, autaway inc. When I'm not coding, you can find me geeking about photography ✨",
   resume: "https://example.com",
   social: {
-    linkedin: "https://linkedin.com",
-    github: "https://github.com",
+    linkedin: "https://www.linkedin.com/in/kiranojhanp/",
+    github: "https://github.com/kiranojhanp",
   },
 }
 
@@ -21,10 +21,22 @@ const projects = [
   // projects can be added an removed
   // if there are no projects, Projects section won't show up
   {
-    name: "Project 1",
+    name: "DatingApp",
     description:
-      "Amet asperiores et impedit aliquam consectetur? Voluptates sed a nulla ipsa officia et esse aliquam",
-    stack: ["SASS", "TypeScript", "React"],
+      "A tinder clone build using NextJS, NestJS and react native. Uses AWS lamda, S3 and Mongodb atlas. Oracle cloud VM used for CI/CD",
+    stack: [
+      "React native",
+      "NextJS",
+      "NestJS",
+      "Redux toolkit",
+      "Storybook",
+      "PostCSS",
+      "AWS",
+      "MongoDB",
+      "GraphQL",
+      "Gothub actions",
+      "Chromatic",
+    ],
     sourceCode: "https://github.com",
     livePreview: "https://github.com",
   },
@@ -37,10 +49,19 @@ const projects = [
     livePreview: "https://github.com",
   },
   {
-    name: "Project 3",
+    name: "MERN shop",
     description:
-      "Amet asperiores et impedit aliquam consectetur? Voluptates sed a nulla ipsa officia et esse aliquam",
-    stack: ["SASS", "TypeScript", "React"],
+      "A fully featured shopping cart using MERN stack and paypal API for payment. This was also my final project for college.",
+    stack: [
+      "React",
+      "NodeJS",
+      "Express",
+      "MongoDB",
+      "Redux",
+      "Heroku",
+      "Jest",
+      "CucumberJS",
+    ],
     sourceCode: "https://github.com",
     livePreview: "https://github.com",
   },
@@ -54,13 +75,24 @@ const skills = [
   "JavaScript",
   "TypeScript",
   "React",
+  "React Native",
+  "NextJS",
   "Redux",
+  "Tailwind",
   "SASS",
-  "Material UI",
-  "Git",
-  "CI/CD",
+  "Storybook",
+  "Svelte",
+  "Sveltekit",
+  "NodeJS",
+  "Express",
+  "NestJS",
+  "SQL",
+  "NOSQL",
   "Jest",
   "Enzyme",
+  "Git",
+  "CI/CD",
+  "AWS",
 ]
 
 const contact = {
