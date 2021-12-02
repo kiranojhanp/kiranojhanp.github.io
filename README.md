@@ -5,17 +5,16 @@
 </p>
 
 ---
-✨ I'm a frontend engineer passionate about making the web accessible to everyone and advocating for building open and inclusive developer communities. 
+
+✨ I'm a frontend engineer passionate about making the web accessible to everyone and advocating for building open and inclusive developer communities.
 
 I love sharing my knowledge with others, and I plan on doing that through content creation on my Blog and Youtube channel. the blog in on the way and will be live very soon. I'm currently working for global course on demand company, enthu.com. When I'm not coding, you can find me geeking about photography and exploring different ways of documenting stories using photography.
 
-
-- 😄 My Pronouns: He/Him   
+- 😄 My Pronouns: He/Him
 - 💬 Ask me about: Svelte, React, NextJS, React Native, Mernstack, Jamstack, Building Career In Tech, Content Creation.
 - 🌱 I’m currently learning Rust, NestJS, Blockchain.
 - 📫 How to reach me: [@kopticss](https://www.instagram.com/kopticss)
 - ⚡ Fun fact: I consume guns n roses for breakfast.
-
 
 <p align="center">
 <a href="https://app.daily.dev/kiranojhanp"><img src="https://api.daily.dev/devcards/945f6b6779e44475832d70475912d0a5.png?r=eje" width="400" alt="Kiran Ojha's Dev Card"/></a>
