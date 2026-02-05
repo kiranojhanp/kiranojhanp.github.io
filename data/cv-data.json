@@ -74,14 +74,73 @@
     }
   ],
   "skills": [
-    { "category": "Frontend", "items": ["React", "React Native", "Svelte", "Storybook", "NextJS"] },
-    { "category": "Backend", "items": ["NodeJS", "Fastify", "Express", "Flask"] },
-    { "category": "Mobile", "items": ["Expo React Native", "Kotlin"] },
-    { "category": "Auth", "items": ["SuperTokens", "Web3 Metamask", "Supabase"] },
-    { "category": "Databases", "items": ["RDBMS", "NOSQL"] },
-    { "category": "DevOps", "items": ["GitHub Actions", "GitLab CI/CD", "Docker", "Portainer"] },
-    { "category": "Methodologies", "items": ["Agile", "Remote workflows", "Client-facing delivery"] },
-    { "category": "Extra", "items": ["SEO", "Monorepos", "Design Systems", "Technical Specifications"] }
+    {
+      "category": "Frontend",
+      "items": [
+        "React",
+        "React Native",
+        "Svelte",
+        "Storybook",
+        "NextJS"
+      ]
+    },
+    {
+      "category": "Backend",
+      "items": [
+        "NodeJS",
+        "Fastify",
+        "Express",
+        "Flask"
+      ]
+    },
+    {
+      "category": "Mobile",
+      "items": [
+        "Expo React Native",
+        "Kotlin"
+      ]
+    },
+    {
+      "category": "Auth",
+      "items": [
+        "SuperTokens",
+        "Web3 Metamask",
+        "Supabase"
+      ]
+    },
+    {
+      "category": "Databases",
+      "items": [
+        "RDBMS",
+        "NOSQL"
+      ]
+    },
+    {
+      "category": "DevOps",
+      "items": [
+        "GitHub Actions",
+        "GitLab CI/CD",
+        "Docker",
+        "Portainer"
+      ]
+    },
+    {
+      "category": "Methodologies",
+      "items": [
+        "Agile",
+        "Remote workflows",
+        "Client-facing delivery"
+      ]
+    },
+    {
+      "category": "Extra",
+      "items": [
+        "SEO",
+        "Monorepos",
+        "Design Systems",
+        "Technical Specifications"
+      ]
+    }
   ],
   "education": [
     {
