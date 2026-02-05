@@ -12,6 +12,40 @@ body {
   }
 }
 
+/* Print styles for portrait orientation */
+@media print {
+  @page {
+    size: portrait;
+    margin: 1cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide interactive elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Ensure all sections are expanded */
+  [style*="max-h-0"] {
+    max-height: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Prevent page breaks inside important elements */
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

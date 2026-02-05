@@ -6,6 +6,8 @@
     "companyId": "sagarmatha",
     "skills": ["Svelte", "Sapper", "CSS", "SEO"],
     "url": "https://enthu.com",
+    "deployedUrl": "https://enthu.com",
+    "image": "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=600&fit=crop",
     "year": 2022
   },
   {
@@ -15,6 +17,8 @@
     "companyId": "dzango",
     "skills": ["React", "Storybook", "TypeScript"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=600&fit=crop",
     "year": 2023
   },
   {
@@ -24,6 +28,8 @@
     "companyId": "dzango",
     "skills": ["React", "NodeJS", "Docker"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop",
     "year": 2023
   },
   {
@@ -33,6 +39,8 @@
     "companyId": "sagarmatha",
     "skills": ["NextJS", "Web3", "Metamask"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=600&fit=crop",
     "year": 2022
   },
   {
@@ -42,6 +50,8 @@
     "companyId": "calcgen",
     "skills": ["React", "React Native"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
     "year": 2021
   },
   {
@@ -51,6 +61,8 @@
     "companyId": "dzango",
     "skills": ["React Native", "Expo", "NodeJS"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=800&h=600&fit=crop",
     "year": 2023
   },
   {
@@ -60,6 +72,8 @@
     "companyId": "sagarmatha",
     "skills": ["NextJS", "MDX", "GitHub API"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop",
     "year": 2021
   },
   {
@@ -69,6 +83,8 @@
     "companyId": "dzango",
     "skills": ["GitLab CI", "GitHub Actions", "Docker", "Portainer"],
     "url": null,
+    "deployedUrl": null,
+    "image": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&h=600&fit=crop",
     "year": 2022
   }
 ]

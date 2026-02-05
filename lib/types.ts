@@ -48,6 +48,8 @@ export interface Project {
   skills: string[];
   url: string | null;
   year: number;
+  image?: string;
+  deployedUrl?: string | null;
 }
 
 export interface CVData {
@@ -56,14 +58,4 @@ export interface CVData {
   experience: Experience[];
   skills: SkillGroup[];
   education: Education[];
-}
-
-export interface Project {
-  id: number;
-  name: string;
-  description: string;
-  companyId: string;
-  skills: string[];
-  url: string | null;
-  year: number;
 }

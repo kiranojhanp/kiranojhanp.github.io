@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Fuse from "fuse.js";
 import {
   Mail,
   Phone,
@@ -15,6 +16,8 @@ import {
   ExternalLink,
   Filter,
   X,
+  Search,
+  ChevronsUpDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +27,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 import type { CVData, Project } from "@/lib/types";
 
@@ -46,6 +62,21 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   const [showProjects, setShowProjects] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [skillComboOpen, setSkillComboOpen] = useState(false);
+
+  // Configure Fuse.js for fuzzy search
+  const fuse = useMemo(() => {
+    return new Fuse(projects, {
+      keys: [
+        { name: "name", weight: 2 },
+        { name: "description", weight: 1.5 },
+        { name: "skills", weight: 1 },
+      ],
+      threshold: 0.3,
+      includeScore: true,
+    });
+  }, [projects]);
 
   const allSkills = useMemo(() => {
     return Array.from(new Set(projects.flatMap((p) => p.skills))).sort();
@@ -73,10 +104,20 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   const clearFilters = () => {
     setSelectedSkills([]);
     setSelectedCompany(null);
+    setSearchQuery("");
   };
 
   const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
+    let results = projects;
+
+    // Apply search query using Fuse.js
+    if (searchQuery.trim()) {
+      const searchResults = fuse.search(searchQuery);
+      results = searchResults.map((result) => result.item);
+    }
+
+    // Apply skill and company filters
+    return results.filter((project) => {
       const matchesSkills =
         selectedSkills.length === 0 ||
         selectedSkills.some((skill) => project.skills.includes(skill));
@@ -84,49 +125,167 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
         !selectedCompany || project.companyId === selectedCompany;
       return matchesSkills && matchesCompany;
     });
-  }, [projects, selectedSkills, selectedCompany]);
+  }, [projects, selectedSkills, selectedCompany, searchQuery, fuse]);
 
   const handlePrint = () => {
+    // Use browser's native print with portrait orientation
+    const style = document.createElement('style');
+    style.textContent = '@page { size: portrait; margin: 0.5cm; }';
+    document.head.appendChild(style);
+    
     window.print();
+    
+    // Clean up
+    setTimeout(() => {
+      document.head.removeChild(style);
+    }, 1000);
   };
 
-  const handleDownload = () => {
-    const element = document.querySelector("main");
-    if (element) {
-      const printWindow = window.open("", "", "height=600,width=800");
-      if (printWindow) {
-        printWindow.document.write(
-          "<html><head><title>Kiran Ojha - CV</title>",
-        );
-        printWindow.document.write(
-          "<style>" +
-            Array.from(document.styleSheets)
-              .map((sheet) => {
-                try {
-                  return Array.from(sheet.cssRules)
-                    .map((rule) => rule.cssText)
-                    .join("\n");
-                } catch (e) {
-                  return "";
-                }
-              })
-              .join("\n") +
-            "</style>",
-        );
-        printWindow.document.write("</head><body>");
-        printWindow.document.write(element.innerHTML);
-        printWindow.document.write("</body></html>");
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-          printWindow.print();
-          printWindow.close();
-        }, 250);
+  const handleDownload = async () => {
+    const element = document.querySelector('.mx-auto.max-w-\\[850px\\]');
+    if (!element) return;
+
+    try {
+      // Dynamically import libraries to reduce initial bundle size
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
+      // Hide interactive elements temporarily
+      const interactiveElements = element.querySelectorAll(
+        '.print\\:hidden, button, .hover\\:text-foreground'
+      );
+      interactiveElements.forEach((el: Element) => {
+        (el as HTMLElement).style.display = 'none';
+      });
+
+      // Expand all sections
+      const collapsedSections = element.querySelectorAll('[style*="max-h-0"]');
+      collapsedSections.forEach((section: Element) => {
+        (section as HTMLElement).style.maxHeight = 'none';
+        (section as HTMLElement).style.opacity = '1';
+      });
+
+      // Add temporary styling for better PDF capture
+      const originalWidth = (element as HTMLElement).style.width;
+      const originalPadding = (element as HTMLElement).style.padding;
+      (element as HTMLElement).style.width = '850px';
+      (element as HTMLElement).style.padding = '40px';
+
+      // Create canvas from the CV element with higher quality
+      const canvas = await html2canvas(element as HTMLElement, {
+        scale: 2.5,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: 850,
+        windowHeight: (element as HTMLElement).scrollHeight,
+      });
+
+      // Restore original styles and hidden elements
+      (element as HTMLElement).style.width = originalWidth;
+      (element as HTMLElement).style.padding = originalPadding;
+      interactiveElements.forEach((el: Element) => {
+        (el as HTMLElement).style.display = '';
+      });
+      collapsedSections.forEach((section: Element) => {
+        (section as HTMLElement).style.maxHeight = '';
+        (section as HTMLElement).style.opacity = '';
+      });
+
+      // Create PDF in portrait mode (A4 size)
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true,
+      });
+
+      // A4 dimensions in mm
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const margin = 10; // 10mm margin on all sides
+      const contentWidth = pdfWidth - 2 * margin;
+      
+      // Calculate scaling to fit width
+      const imgWidth = contentWidth;
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      
+      // Calculate how many pages we need
+      const pageContentHeight = pdfHeight - 2 * margin;
+      const totalPages = Math.ceil(imgHeight / pageContentHeight);
+
+      const imgData = canvas.toDataURL('image/png', 0.95);
+
+      // Add pages with proper cropping
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) {
+          pdf.addPage();
+        }
+
+        // Calculate the portion of the image to show on this page
+        const sourceY = (page * pageContentHeight * canvas.width) / contentWidth;
+        const sourceHeight = (pageContentHeight * canvas.width) / contentWidth;
+
+        // Create a temporary canvas for this page's content
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(sourceHeight, canvas.height - sourceY);
+
+        const pageCtx = pageCanvas.getContext('2d');
+        if (pageCtx) {
+          // Draw the portion of the original canvas onto this page's canvas
+          pageCtx.drawImage(
+            canvas,
+            0,
+            sourceY,
+            canvas.width,
+            pageCanvas.height,
+            0,
+            0,
+            canvas.width,
+            pageCanvas.height
+          );
+
+          // Add this page's image to the PDF
+          const pageImgData = pageCanvas.toDataURL('image/png', 0.95);
+          const pageImgHeight = (pageCanvas.height * contentWidth) / canvas.width;
+          
+          pdf.addImage(
+            pageImgData,
+            'PNG',
+            margin,
+            margin,
+            contentWidth,
+            pageImgHeight,
+            undefined,
+            'FAST'
+          );
+        }
       }
+
+      // Download the PDF
+      pdf.save('Kiran-Ojha-CV.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // eslint-disable-next-line no-alert
+      window.alert('Failed to generate PDF. Please try printing instead.');
     }
   };
 
-  const hasActiveFilters = selectedSkills.length > 0 || selectedCompany;
+  const hasActiveFilters =
+    selectedSkills.length > 0 || selectedCompany || searchQuery.trim();
+
+  // Helper function to highlight search terms
+  const highlightText = (text: string, query: string) => {
+    if (!query.trim()) return text;
+    
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return parts.map((part, index) => 
+      part.toLowerCase() === query.toLowerCase() 
+        ? `<mark class="bg-yellow-200 text-foreground">${part}</mark>`
+        : part
+    ).join('');
+  };
 
   const { personal, companies, experience, skills, education } = cvData;
 
@@ -134,7 +293,11 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
     <TooltipProvider>
       <main className="min-h-screen bg-muted py-8 px-4 print:bg-background print:py-0">
         {/* Floating Action Bar */}
-        <div className="fixed top-4 right-4 flex gap-2 print:hidden z-50">
+        <div
+          className={`fixed top-4 right-4 flex gap-2 print:hidden z-50 transition-opacity duration-200 ${
+            showProjects ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -409,156 +572,336 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
 
         {/* Projects Panel - Slides in from right */}
         <div
-          className={`fixed top-0 right-0 h-full w-full max-w-md bg-background shadow-2xl transform transition-transform duration-300 ease-in-out print:hidden z-40 ${
+          className={`fixed top-0 right-0 h-full w-full max-w-md bg-background shadow-2xl transform transition-transform duration-300 ease-in-out print:hidden z-[60] ${
             showProjects ? "translate-x-0" : "translate-x-full"
           }`}
         >
           <div className="h-full flex flex-col">
             {/* Panel Header */}
-            <div className="p-4 border-b flex items-center justify-between">
-              <h2 className="text-lg font-bold">Projects Portfolio</h2>
+            <div className="p-3 border-b flex items-center justify-between">
+              <h2 className="text-base font-semibold">Projects</h2>
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-8 w-8"
                 onClick={() => setShowProjects(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Filters */}
-            <div className="p-4 border-b space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Filter by skill
-                </span>
+            {/* Minimal Mixed Filters */}
+            <div className="p-3 border-b space-y-2">
+              {/* Search + Clear */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-8 pl-8 pr-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-background"
+                  />
+                </div>
                 {hasActiveFilters && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={clearFilters}
-                    className="h-auto py-1 px-2 text-xs"
+                    className="h-8 px-2 text-xs whitespace-nowrap"
                   >
-                    Clear all
+                    <X className="h-3 w-3 mr-1" />
+                    Clear
                   </Button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {allSkills.map((skill) => (
-                  <Badge
-                    key={skill}
-                    variant={
-                      selectedSkills.includes(skill) ? "default" : "outline"
-                    }
-                    className="cursor-pointer text-xs transition-colors hover:bg-primary hover:text-primary-foreground"
-                    onClick={() => toggleSkill(skill)}
-                  >
-                    {skill}
-                  </Badge>
-                ))}
+
+              {/* Skills + Company in one row */}
+              <div className="flex gap-2">
+                {/* Skills Combobox */}
+                <Popover open={skillComboOpen} onOpenChange={setSkillComboOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      role="combobox"
+                      aria-expanded={skillComboOpen}
+                      className="h-8 flex-1 justify-between text-xs font-normal"
+                    >
+                      <span className="truncate">
+                        {selectedSkills.length > 0
+                          ? `${selectedSkills.length} skill${selectedSkills.length > 1 ? 's' : ''}`
+                          : "Skills"}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search..." className="h-8" />
+                      <CommandList>
+                        <CommandEmpty>No skill found.</CommandEmpty>
+                        <CommandGroup>
+                          {allSkills.map((skill) => (
+                            <CommandItem
+                              key={skill}
+                              value={skill}
+                              onSelect={() => toggleSkill(skill)}
+                              className="text-xs"
+                            >
+                              <div
+                                className={`mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-primary ${
+                                  selectedSkills.includes(skill)
+                                    ? "bg-primary text-primary-foreground"
+                                    : "opacity-50"
+                                }`}
+                              >
+                                {selectedSkills.includes(skill) && (
+                                  <Check className="h-2.5 w-2.5" />
+                                )}
+                              </div>
+                              <span>{skill}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Company Combobox */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 flex-1 justify-between text-xs font-normal"
+                    >
+                      <span className="truncate">
+                        {selectedCompany
+                          ? companies[selectedCompany]?.name.split(" ")[0]
+                          : "Company"}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0" align="end">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup>
+                          <CommandItem
+                            onSelect={() => setSelectedCompany(null)}
+                            className="text-xs"
+                          >
+                            <div
+                              className={`mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-primary ${
+                                !selectedCompany
+                                  ? "bg-primary text-primary-foreground"
+                                  : "opacity-50"
+                              }`}
+                            >
+                              {!selectedCompany && (
+                                <Check className="h-2.5 w-2.5" />
+                              )}
+                            </div>
+                            <span>All Companies</span>
+                          </CommandItem>
+                          {Object.values(companies).map((company) => (
+                            <CommandItem
+                              key={company.id}
+                              value={company.name}
+                              onSelect={() =>
+                                setSelectedCompany(
+                                  selectedCompany === company.id
+                                    ? null
+                                    : company.id
+                                )
+                              }
+                              className="text-xs"
+                            >
+                              <div
+                                className={`mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-primary ${
+                                  selectedCompany === company.id
+                                    ? "bg-primary text-primary-foreground"
+                                    : "opacity-50"
+                                }`}
+                              >
+                                {selectedCompany === company.id && (
+                                  <Check className="h-2.5 w-2.5" />
+                                )}
+                              </div>
+                              <span>{company.name}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
-                <span>Company:</span>
-                <div className="flex gap-1.5">
-                  {Object.values(companies).map((company) => (
+              {/* Active Filters (chips) */}
+              {(selectedSkills.length > 0 || selectedCompany) && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {selectedSkills.map((skill) => (
                     <Badge
-                      key={company.id}
-                      variant={
-                        selectedCompany === company.id ? "default" : "outline"
-                      }
-                      className="cursor-pointer text-xs transition-colors hover:bg-primary hover:text-primary-foreground"
-                      onClick={() =>
-                        setSelectedCompany(
-                          selectedCompany === company.id ? null : company.id,
-                        )
-                      }
+                      key={skill}
+                      variant="secondary"
+                      className="h-5 text-[10px] px-1.5 cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                      onClick={() => toggleSkill(skill)}
                     >
-                      {company.name.split(" ")[0]}
+                      {skill}
+                      <X className="ml-1 h-2.5 w-2.5" />
                     </Badge>
                   ))}
+                  {selectedCompany && (
+                    <Badge
+                      variant="secondary"
+                      className="h-5 text-[10px] px-1.5 cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                      onClick={() => setSelectedCompany(null)}
+                    >
+                      {companies[selectedCompany]?.name.split(" ")[0]}
+                      <X className="ml-1 h-2.5 w-2.5" />
+                    </Badge>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Projects List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {/* Results Counter */}
+              {filteredProjects.length > 0 && (
+                <div className="text-xs text-muted-foreground pb-2 border-b">
+                  Showing {filteredProjects.length} of {projects.length}{" "}
+                  project{projects.length !== 1 ? "s" : ""}
+                </div>
+              )}
+
               {filteredProjects.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  <p>No projects match the selected filters.</p>
+                <div className="text-center text-muted-foreground py-12">
+                  <Filter className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                  <p className="font-medium mb-1">No projects found</p>
+                  <p className="text-sm mb-4">
+                    {searchQuery
+                      ? `No results for "${searchQuery}"`
+                      : "Try adjusting your filters"}
+                  </p>
                   <Button
-                    variant="link"
+                    variant="outline"
+                    size="sm"
                     onClick={clearFilters}
-                    className="mt-2"
                   >
-                    Clear filters
+                    Clear all filters
                   </Button>
                 </div>
               ) : (
-                filteredProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="p-4 border rounded-lg hover:border-primary transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-semibold text-foreground">
-                        {project.name}
-                      </h3>
-                      {project.url && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <a
-                              href={project.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-muted-foreground hover:text-primary transition-colors"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </TooltipTrigger>
-                          <TooltipContent>Visit project</TooltipContent>
-                        </Tooltip>
+                filteredProjects.map((project) => {
+                  const CardWrapper = project.deployedUrl ? 'a' : 'div';
+                  const cardProps = project.deployedUrl
+                    ? {
+                        href: project.deployedUrl,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                        className:
+                          'block border rounded-lg overflow-hidden hover:border-primary hover:shadow-lg transition-all cursor-pointer group',
+                      }
+                    : {
+                        className: 'border rounded-lg overflow-hidden',
+                      };
+
+                  return (
+                    <CardWrapper key={project.id} {...cardProps}>
+                      {/* Project Image */}
+                      {project.image && (
+                        <div className="relative w-full h-40 bg-muted overflow-hidden">
+                          <img
+                            src={project.image}
+                            alt={project.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          {project.deployedUrl && (
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                              <ExternalLink className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          )}
+                        </div>
                       )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {project.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-wrap gap-1">
-                        {project.skills.map((skill) => (
+
+                      {/* Project Content */}
+                      <div className="p-4">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                            {project.name}
+                          </h3>
+                          {project.url && !project.deployedUrl && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <a
+                                  href={project.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-muted-foreground hover:text-primary transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </a>
+                              </TooltipTrigger>
+                              <TooltipContent>Visit project</TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                          {project.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1">
+                            {project.skills.slice(0, 3).map((skill) => (
+                              <Badge
+                                key={skill}
+                                variant="secondary"
+                                className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (!selectedSkills.includes(skill)) {
+                                    toggleSkill(skill);
+                                  }
+                                }}
+                              >
+                                {skill}
+                              </Badge>
+                            ))}
+                            {project.skills.length > 3 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{project.skills.length - 3}
+                              </Badge>
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {project.year}
+                          </span>
+                        </div>
+                        <div className="mt-2 pt-2 border-t">
                           <Badge
-                            key={skill}
-                            variant="secondary"
+                            variant="outline"
                             className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                            onClick={() => {
-                              if (!selectedSkills.includes(skill)) {
-                                toggleSkill(skill);
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (selectedCompany !== project.companyId) {
+                                setSelectedCompany(project.companyId);
                               }
                             }}
                           >
-                            {skill}
+                            {companies[project.companyId]?.name.split(' ')[0]}
                           </Badge>
-                        ))}
+                        </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {project.year}
-                      </span>
-                    </div>
-                    <div className="mt-2 pt-2 border-t">
-                      <Badge
-                        variant="outline"
-                        className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                        onClick={() => {
-                          if (selectedCompany !== project.companyId) {
-                            setSelectedCompany(project.companyId);
-                          }
-                        }}
-                      >
-                        {companies[project.companyId]?.name.split(" ")[0]}
-                      </Badge>
-                    </div>
-                  </div>
-                ))
+                    </CardWrapper>
+                  );
+                })
               )}
             </div>
 
