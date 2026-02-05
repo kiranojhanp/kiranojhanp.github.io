@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "E-Learning Platform UI",
+    "description": "High-performance UI for Enthu.com using Svelte/Sapper with SSR optimization",
+    "companyId": "sagarmatha",
+    "skills": ["Svelte", "Sapper", "CSS", "SEO"],
+    "url": "https://enthu.com",
+    "year": 2022
+  },
+  {
+    "id": 2,
+    "name": "Design System Library",
+    "description": "Reusable component library adopted across multiple client projects",
+    "companyId": "dzango",
+    "skills": ["React", "Storybook", "TypeScript"],
+    "url": null,
+    "year": 2023
+  },
+  {
+    "id": 3,
+    "name": "No-Code Boilerplate",
+    "description": "Internal tool to accelerate new project setups with pre-configured templates",
+    "companyId": "dzango",
+    "skills": ["React", "NodeJS", "Docker"],
+    "url": null,
+    "year": 2023
+  },
+  {
+    "id": 4,
+    "name": "Web3 Auth Prototype",
+    "description": "Metamask authentication integration for decentralized app prototype",
+    "companyId": "sagarmatha",
+    "skills": ["NextJS", "Web3", "Metamask"],
+    "url": null,
+    "year": 2022
+  },
+  {
+    "id": 5,
+    "name": "Enterprise Dashboard",
+    "description": "Internal dashboard serving 1000+ active enterprise users",
+    "companyId": "calcgen",
+    "skills": ["React", "React Native"],
+    "url": null,
+    "year": 2021
+  },
+  {
+    "id": 6,
+    "name": "Mobile Delivery App",
+    "description": "Cross-platform delivery tracking app with real-time updates",
+    "companyId": "dzango",
+    "skills": ["React Native", "Expo", "NodeJS"],
+    "url": null,
+    "year": 2023
+  },
+  {
+    "id": 7,
+    "name": "Markdown Blog Platform",
+    "description": "Developer blog with GitHub-hosted content and MDX rendering",
+    "companyId": "sagarmatha",
+    "skills": ["NextJS", "MDX", "GitHub API"],
+    "url": null,
+    "year": 2021
+  },
+  {
+    "id": 8,
+    "name": "CI/CD Pipeline Setup",
+    "description": "Automated deployment pipelines for multiple client projects",
+    "companyId": "dzango",
+    "skills": ["GitLab CI", "GitHub Actions", "Docker", "Portainer"],
+    "url": null,
+    "year": 2022
+  }
+]

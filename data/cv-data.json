@@ -1,0 +1,109 @@
+{
+  "personal": {
+    "name": "Kiran Ojha",
+    "location": {
+      "city": "Mandurah, WA",
+      "mapsUrl": "https://maps.google.com/?q=Mandurah,WA"
+    },
+    "phone": "0411684674",
+    "email": "kiranojha1226@gmail.com",
+    "github": {
+      "url": "https://www.github.com/kiranojhanp",
+      "display": "www.github.com/kiranojhanp"
+    }
+  },
+  "companies": {
+    "dzango": {
+      "id": "dzango",
+      "name": "Dzango Technologies",
+      "url": "https://dzango.com",
+      "location": "Hong Kong",
+      "type": "software development agency"
+    },
+    "sagarmatha": {
+      "id": "sagarmatha",
+      "name": "Sagarmatha Informatics Pvt. Ltd",
+      "url": "https://sagarmatha.com.np",
+      "location": "Kathmandu, Nepal",
+      "type": null
+    },
+    "calcgen": {
+      "id": "calcgen",
+      "name": "Calcgen Solutions",
+      "url": "https://calcgen.com",
+      "location": "Lalitpur, Nepal",
+      "type": null
+    }
+  },
+  "experience": [
+    {
+      "companyId": "dzango",
+      "title": "Fullstack Software Developer",
+      "period": "Jun 2022 - Dec 2023",
+      "responsibilities": [
+        "Led day to day collaboration with European clients and Nepal development team, improving delivery alignment and communication",
+        "Delivered multiple concurrent projects (internal + client) across web & mobile using React, React Native, and NodeJS",
+        "Developed internal design system + reusable component libraries adopted across projects, improving UI consistency & onboarding speed",
+        "Built a no-code boilerplate to accelerate new project setups",
+        "Managed user stories, sprint planning, and backlog grooming using Agile practices (Notion/Clickup)",
+        "Implemented CI/CD pipelines (Gitlab + GitHub Actions) and container workflows with Docker/Portainer",
+        "Gained experience with SEO optimization, REST API design, monorepos, and release processes"
+      ]
+    },
+    {
+      "companyId": "sagarmatha",
+      "title": "Frontend Developer",
+      "period": "Jun 2021 - May 2022",
+      "responsibilities": [
+        "Built high-performance UI for Enthu.com, a leading e-learning platform in India, using Svelte/Sapper",
+        "Collaborated with designers to implement reusable UI components and design systems",
+        "Developed internal blog platforms with markdown rendering using NextJS + GitHub hosted content",
+        "Integrated Web3 Metamask authentication for a prototype web application",
+        "Mentored and supported a junior developer in onboarding and task execution"
+      ]
+    },
+    {
+      "companyId": "calcgen",
+      "title": "Junior Developer",
+      "period": "May 2021 - Jun 2021",
+      "responsibilities": [
+        "Developed responsive UIs for web and mobile apps using React and React Native",
+        "Built internal dashboards for enterprise clients with 1000+ active users",
+        "Managed tasks using Trello and waterfall-based milestone planning"
+      ]
+    }
+  ],
+  "skills": [
+    { "category": "Frontend", "items": ["React", "React Native", "Svelte", "Storybook", "NextJS"] },
+    { "category": "Backend", "items": ["NodeJS", "Fastify", "Express", "Flask"] },
+    { "category": "Mobile", "items": ["Expo React Native", "Kotlin"] },
+    { "category": "Auth", "items": ["SuperTokens", "Web3 Metamask", "Supabase"] },
+    { "category": "Databases", "items": ["RDBMS", "NOSQL"] },
+    { "category": "DevOps", "items": ["GitHub Actions", "GitLab CI/CD", "Docker", "Portainer"] },
+    { "category": "Methodologies", "items": ["Agile", "Remote workflows", "Client-facing delivery"] },
+    { "category": "Extra", "items": ["SEO", "Monorepos", "Design Systems", "Technical Specifications"] }
+  ],
+  "education": [
+    {
+      "institution": "Kaplan College",
+      "location": "Perth, WA",
+      "degree": "Master of Information Technology",
+      "period": "Expected Feb 2026",
+      "details": "Relevant Coursework: Android Development, Python, Artificial Intelligence, Web Development"
+    },
+    {
+      "institution": "Murdoch University",
+      "location": "Murdoch, WA",
+      "degree": "Master of Information Technology",
+      "period": "Feb 2024 - Mar 2025",
+      "details": "Relevant Coursework: Business Analytics, Project Management, Database"
+    },
+    {
+      "institution": "Coventry University",
+      "location": "New York, NY",
+      "degree": "Bsc. (Hons) Computing and IT",
+      "period": "Jul 2016 - May 2021",
+      "details": "First Class Honors"
+    }
+  ]
+}
