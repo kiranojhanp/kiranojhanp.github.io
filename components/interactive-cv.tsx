@@ -573,7 +573,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                       </p>
                     </div>
                     <ul
-                      className={`list-disc list-outside ml-5 space-y-1 text-sm text-foreground transition-all duration-300 overflow-hidden print:max-h-none print:opacity-100 ${
+                      className={`list-disc list-inside ml-5 space-y-1 text-sm text-foreground transition-all duration-300 overflow-hidden print:max-h-none print:opacity-100 ${
                         expandedSections[exp.companyId]
                           ? "max-h-[500px] opacity-100"
                           : "max-h-0 opacity-0"
