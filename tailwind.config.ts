@@ -11,8 +11,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['var(--font-serif)', 'Georgia', 'serif'],
-        cursive: ['var(--font-cursive)', 'cursive'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        serif: ['Crimson Pro', 'Georgia', 'serif'],
+        cursive: ['Dancing Script', 'cursive'],
       },
       colors: {
         background: 'hsl(var(--background))',

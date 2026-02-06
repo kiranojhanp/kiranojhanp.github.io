@@ -76,6 +76,9 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [skillComboOpen, setSkillComboOpen] = useState(false);
+  const [revealedDetails, setRevealedDetails] = useState<
+    Record<string, boolean>
+  >({});
 
   // Configure Fuse.js for fuzzy search
   const fuse = useMemo(() => {
@@ -105,6 +108,22 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  const toggleReveal = (field: string) => {
+    setRevealedDetails((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
+  const obfuscateEmail = (email: string) => {
+    const [local, domain] = email.split("@");
+    return `${local.substring(0, 2)}${"•".repeat(Math.max(2, local.length - 2))}@${domain}`;
+  };
+
+  const obfuscatePhone = (phone: string) => {
+    return phone.substring(0, 4) + "•".repeat(Math.max(2, phone.length - 4));
   };
 
   const toggleSkill = (skill: string) => {
@@ -141,12 +160,12 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
 
   const handlePrint = () => {
     // Use browser's native print with portrait orientation
-    const style = document.createElement('style');
-    style.textContent = '@page { size: portrait; margin: 0.5cm; }';
+    const style = document.createElement("style");
+    style.textContent = "@page { size: portrait; margin: 0.5cm; }";
     document.head.appendChild(style);
-    
+
     window.print();
-    
+
     // Clean up
     setTimeout(() => {
       document.head.removeChild(style);
@@ -154,40 +173,40 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   };
 
   const handleDownload = async () => {
-    const element = document.querySelector('.mx-auto.max-w-\\[850px\\]');
+    const element = document.querySelector(".mx-auto.max-w-\\[850px\\]");
     if (!element) return;
 
     try {
       // Dynamically import libraries to reduce initial bundle size
-      const html2canvas = (await import('html2canvas')).default;
-      const { jsPDF } = await import('jspdf');
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
 
       // Hide interactive elements temporarily
       const interactiveElements = element.querySelectorAll(
-        '.print\\:hidden, button, .hover\\:text-foreground'
+        ".print\\:hidden, button, .hover\\:text-foreground",
       );
       interactiveElements.forEach((el: Element) => {
-        (el as HTMLElement).style.display = 'none';
+        (el as HTMLElement).style.display = "none";
       });
 
       // Expand all sections
       const collapsedSections = element.querySelectorAll('[style*="max-h-0"]');
       collapsedSections.forEach((section: Element) => {
-        (section as HTMLElement).style.maxHeight = 'none';
-        (section as HTMLElement).style.opacity = '1';
+        (section as HTMLElement).style.maxHeight = "none";
+        (section as HTMLElement).style.opacity = "1";
       });
 
       // Add temporary styling for better PDF capture
       const originalWidth = (element as HTMLElement).style.width;
       const originalPadding = (element as HTMLElement).style.padding;
-      (element as HTMLElement).style.width = '850px';
-      (element as HTMLElement).style.padding = '40px';
+      (element as HTMLElement).style.width = "850px";
+      (element as HTMLElement).style.padding = "40px";
 
       // Create canvas from the CV element with higher quality
       const canvas = await html2canvas(element as HTMLElement, {
         scale: 2.5,
         useCORS: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
         logging: false,
         windowWidth: 850,
         windowHeight: (element as HTMLElement).scrollHeight,
@@ -197,18 +216,18 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
       (element as HTMLElement).style.width = originalWidth;
       (element as HTMLElement).style.padding = originalPadding;
       interactiveElements.forEach((el: Element) => {
-        (el as HTMLElement).style.display = '';
+        (el as HTMLElement).style.display = "";
       });
       collapsedSections.forEach((section: Element) => {
-        (section as HTMLElement).style.maxHeight = '';
-        (section as HTMLElement).style.opacity = '';
+        (section as HTMLElement).style.maxHeight = "";
+        (section as HTMLElement).style.opacity = "";
       });
 
       // Create PDF in portrait mode (A4 size)
       const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
         compress: true,
       });
 
@@ -217,16 +236,16 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
       const pdfHeight = 297;
       const margin = 10; // 10mm margin on all sides
       const contentWidth = pdfWidth - 2 * margin;
-      
+
       // Calculate scaling to fit width
       const imgWidth = contentWidth;
       const imgHeight = (canvas.height * contentWidth) / canvas.width;
-      
+
       // Calculate how many pages we need
       const pageContentHeight = pdfHeight - 2 * margin;
       const totalPages = Math.ceil(imgHeight / pageContentHeight);
 
-      const imgData = canvas.toDataURL('image/png', 0.95);
+      const imgData = canvas.toDataURL("image/png", 0.95);
 
       // Add pages with proper cropping
       for (let page = 0; page < totalPages; page++) {
@@ -235,15 +254,16 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
         }
 
         // Calculate the portion of the image to show on this page
-        const sourceY = (page * pageContentHeight * canvas.width) / contentWidth;
+        const sourceY =
+          (page * pageContentHeight * canvas.width) / contentWidth;
         const sourceHeight = (pageContentHeight * canvas.width) / contentWidth;
 
         // Create a temporary canvas for this page's content
-        const pageCanvas = document.createElement('canvas');
+        const pageCanvas = document.createElement("canvas");
         pageCanvas.width = canvas.width;
         pageCanvas.height = Math.min(sourceHeight, canvas.height - sourceY);
 
-        const pageCtx = pageCanvas.getContext('2d');
+        const pageCtx = pageCanvas.getContext("2d");
         if (pageCtx) {
           // Draw the portion of the original canvas onto this page's canvas
           pageCtx.drawImage(
@@ -255,32 +275,33 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
             0,
             0,
             canvas.width,
-            pageCanvas.height
+            pageCanvas.height,
           );
 
           // Add this page's image to the PDF
-          const pageImgData = pageCanvas.toDataURL('image/png', 0.95);
-          const pageImgHeight = (pageCanvas.height * contentWidth) / canvas.width;
-          
+          const pageImgData = pageCanvas.toDataURL("image/png", 0.95);
+          const pageImgHeight =
+            (pageCanvas.height * contentWidth) / canvas.width;
+
           pdf.addImage(
             pageImgData,
-            'PNG',
+            "PNG",
             margin,
             margin,
             contentWidth,
             pageImgHeight,
             undefined,
-            'FAST'
+            "FAST",
           );
         }
       }
 
       // Download the PDF
-      pdf.save('Kiran-Ojha-CV.pdf');
+      pdf.save("Kiran-Ojha-CV.pdf");
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error("Error generating PDF:", error);
       // eslint-disable-next-line no-alert
-      window.alert('Failed to generate PDF. Please try printing instead.');
+      window.alert("Failed to generate PDF. Please try printing instead.");
     }
   };
 
@@ -290,20 +311,22 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   // Helper function to highlight search terms
   const highlightText = (text: string, query: string) => {
     if (!query.trim()) return text;
-    
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, index) => 
-      part.toLowerCase() === query.toLowerCase() 
-        ? `<mark class="bg-yellow-200 text-foreground">${part}</mark>`
-        : part
-    ).join('');
+
+    const parts = text.split(new RegExp(`(${query})`, "gi"));
+    return parts
+      .map((part, index) =>
+        part.toLowerCase() === query.toLowerCase()
+          ? `<mark class="bg-yellow-200 text-foreground">${part}</mark>`
+          : part,
+      )
+      .join("");
   };
 
   const { personal, companies, experience, skills, education } = cvData;
 
   return (
     <TooltipProvider>
-      <main className="min-h-screen bg-muted py-8 px-4 print:bg-background print:py-0">
+      <main className="min-h-screen bg-gradient-to-br from-muted via-background to-muted py-8 px-4 print:bg-background print:py-0">
         {/* Floating Action Bar - Minimal Design */}
         <div
           className={`fixed top-4 right-4 flex gap-2 print:hidden z-50 transition-opacity duration-200 ${
@@ -314,7 +337,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
             variant={showProjects ? "default" : "outline"}
             size="sm"
             onClick={() => setShowProjects(!showProjects)}
-            className="bg-background shadow-md"
+            className="bg-background shadow-md hover:shadow-lg transition-shadow"
           >
             <Filter className="h-4 w-4 mr-2" />
             Projects
@@ -324,7 +347,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
               <Button
                 variant="outline"
                 size="icon"
-                className="bg-background shadow-md"
+                className="bg-background shadow-md hover:shadow-lg transition-shadow"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -344,101 +367,142 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
               >
                 <Sun className="h-4 w-4 mr-2 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-4 w-4 ml-0 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="ml-6">{theme === "dark" ? "Light" : "Dark"} Mode</span>
+                <span className="ml-6">
+                  {theme === "dark" ? "Light" : "Dark"} Mode
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <div className="mx-auto max-w-[850px] bg-background shadow-lg print:shadow-none">
+        <div className="mx-auto max-w-[850px] bg-background shadow-xl print:shadow-none rounded-lg overflow-hidden backdrop-blur-sm">
           <div className="p-8 md:p-12">
             {/* Header */}
             <header className="mb-6">
-              <h1 className="text-4xl font-cursive text-foreground mb-2">
+              <h1 className="text-5xl font-cursive font-bold text-foreground mb-3">
                 {personal.name}
               </h1>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <a
-                      href={personal.location.mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-                    >
-                      <MapPin className="h-3.5 w-3.5" />
-                      {personal.location.city}
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent>View on Google Maps</TooltipContent>
-                </Tooltip>
+                <a
+                  href={personal.location.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  {personal.location.city}
+                </a>
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button
-                      onClick={() => copyToClipboard(personal.phone, "phone")}
-                      className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-                    >
-                      {copiedField === "phone" ? (
-                        <Check className="h-3.5 w-3.5 text-green-600" />
-                      ) : (
+                    <span className="flex items-center gap-1">
+                      <button
+                        onClick={() => toggleReveal("phone")}
+                        className="flex items-center gap-1 hover:text-foreground transition-colors print:before:content-[attr(data-phone)]"
+                        data-phone={personal.phone}
+                      >
                         <Phone className="h-3.5 w-3.5" />
+                        <span
+                          className={`print:hidden ${!revealedDetails.phone ? "obfuscated" : ""}`}
+                        >
+                          {revealedDetails.phone
+                            ? personal.phone
+                            : obfuscatePhone(personal.phone)}
+                        </span>
+                        <span className="hidden print:inline">
+                          {personal.phone}
+                        </span>
+                      </button>
+                      {revealedDetails.phone && (
+                        <button
+                          onClick={() =>
+                            copyToClipboard(personal.phone, "phone")
+                          }
+                          className="hover:text-foreground transition-colors print:hidden"
+                        >
+                          {copiedField === "phone" ? (
+                            <Check className="h-3 w-3 text-green-600" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </button>
                       )}
-                      {personal.phone}
-                    </button>
+                    </span>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    {copiedField === "phone" ? "Copied!" : "Click to copy"}
+                  <TooltipContent side="bottom">
+                    {revealedDetails.phone
+                      ? "Click to hide"
+                      : "Click to reveal"}
                   </TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="flex items-center gap-1">
-                      <a
-                        href={`mailto:${personal.email}`}
-                        className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      <button
+                        onClick={() => toggleReveal("email")}
+                        className="flex items-center gap-1 hover:text-foreground transition-colors print:before:content-[attr(data-email)]"
+                        data-email={personal.email}
                       >
                         <Mail className="h-3.5 w-3.5" />
-                        {personal.email}
-                      </a>
-                      <button
-                        onClick={() => copyToClipboard(personal.email, "email")}
-                        className="hover:text-foreground transition-colors print:hidden"
-                      >
-                        {copiedField === "email" ? (
-                          <Check className="h-3 w-3 text-green-600" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
+                        <span
+                          className={`print:hidden ${!revealedDetails.email ? "obfuscated" : ""}`}
+                        >
+                          {revealedDetails.email
+                            ? personal.email
+                            : obfuscateEmail(personal.email)}
+                        </span>
+                        <span className="hidden print:inline">
+                          {personal.email}
+                        </span>
                       </button>
+                      {revealedDetails.email && (
+                        <>
+                          <a
+                            href={`mailto:${personal.email}`}
+                            className="hover:text-foreground transition-colors print:hidden"
+                            title="Send email"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                          <button
+                            onClick={() =>
+                              copyToClipboard(personal.email, "email")
+                            }
+                            className="hover:text-foreground transition-colors print:hidden"
+                          >
+                            {copiedField === "email" ? (
+                              <Check className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </button>
+                        </>
+                      )}
                     </span>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    Click email to send, or copy icon to copy
+                  <TooltipContent side="bottom">
+                    {revealedDetails.email
+                      ? "Click to hide"
+                      : "Click to reveal"}
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <a
-                      href={personal.github.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors"
-                    >
-                      <Github className="h-3.5 w-3.5" />
-                      {personal.github.display}
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent>View GitHub Profile</TooltipContent>
-                </Tooltip>
+                <a
+                  href={personal.github.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 hover:text-foreground transition-colors"
+                >
+                  <Github className="h-3.5 w-3.5" />
+                  {personal.github.display}
+                </a>
               </div>
             </header>
 
             {/* Work Experience */}
             <section className="mb-6">
-              <h2 className="text-lg font-bold text-foreground border-b border-foreground pb-1 mb-4 uppercase tracking-wide">
+              <h2 className="text-lg font-bold text-foreground border-b-2 border-foreground pb-1.5 mb-4 uppercase tracking-wider">
                 Work Experience
               </h2>
 
@@ -448,20 +512,15 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                   <div key={exp.companyId} className="mb-5">
                     <div className="flex justify-between items-start gap-4 mb-1">
                       <div className="flex items-center flex-wrap gap-x-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <a
-                              href={company.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-bold text-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
-                            >
-                              {company.name}
-                              <ExternalLink className="h-3 w-3 print:hidden" />
-                            </a>
-                          </TooltipTrigger>
-                          <TooltipContent>Visit company website</TooltipContent>
-                        </Tooltip>
+                        <a
+                          href={company.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                        >
+                          {company.name}
+                          <ExternalLink className="h-3 w-3 print:hidden" />
+                        </a>
                         {company.type && (
                           <span className="text-muted-foreground text-sm">
                             ({company.type})
@@ -531,7 +590,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
 
             {/* Core Skills */}
             <section className="mb-6">
-              <h2 className="text-lg font-bold text-foreground border-b border-foreground pb-1 mb-4 uppercase tracking-wide">
+              <h2 className="text-lg font-bold text-foreground border-b-2 border-foreground pb-1.5 mb-4 uppercase tracking-wider">
                 Core Skills
               </h2>
               <ul className="list-disc list-outside ml-5 space-y-1 text-sm text-foreground">
@@ -548,7 +607,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
 
             {/* Education */}
             <section>
-              <h2 className="text-lg font-bold text-foreground border-b border-foreground pb-1 mb-4 uppercase tracking-wide">
+              <h2 className="text-lg font-bold text-foreground border-b-2 border-foreground pb-1.5 mb-4 uppercase tracking-wider">
                 Education
               </h2>
 
@@ -641,13 +700,16 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                     >
                       <span className="truncate">
                         {selectedSkills.length > 0
-                          ? `${selectedSkills.length} skill${selectedSkills.length > 1 ? 's' : ''}`
+                          ? `${selectedSkills.length} skill${selectedSkills.length > 1 ? "s" : ""}`
                           : "Skills"}
                       </span>
                       <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[280px] p-0" align="start">
+                  <PopoverContent
+                    className="w-[280px] p-0 z-[70]"
+                    align="start"
+                  >
                     <Command>
                       <CommandInput placeholder="Search..." className="h-8" />
                       <CommandList>
@@ -696,7 +758,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                       <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0" align="end">
+                  <PopoverContent className="w-[200px] p-0 z-[70]" align="end">
                     <Command>
                       <CommandList>
                         <CommandGroup>
@@ -725,7 +787,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                                 setSelectedCompany(
                                   selectedCompany === company.id
                                     ? null
-                                    : company.id
+                                    : company.id,
                                 )
                               }
                               className="text-xs"
@@ -784,8 +846,8 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
               {/* Results Counter */}
               {filteredProjects.length > 0 && (
                 <div className="text-xs text-muted-foreground pb-2 border-b">
-                  Showing {filteredProjects.length} of {projects.length}{" "}
-                  project{projects.length !== 1 ? "s" : ""}
+                  Showing {filteredProjects.length} of {projects.length} project
+                  {projects.length !== 1 ? "s" : ""}
                 </div>
               )}
 
@@ -798,27 +860,23 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                       ? `No results for "${searchQuery}"`
                       : "Try adjusting your filters"}
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearFilters}
-                  >
+                  <Button variant="outline" size="sm" onClick={clearFilters}>
                     Clear all filters
                   </Button>
                 </div>
               ) : (
                 filteredProjects.map((project) => {
-                  const CardWrapper = project.deployedUrl ? 'a' : 'div';
+                  const CardWrapper = project.deployedUrl ? "a" : "div";
                   const cardProps = project.deployedUrl
                     ? {
                         href: project.deployedUrl,
-                        target: '_blank',
-                        rel: 'noopener noreferrer',
+                        target: "_blank",
+                        rel: "noopener noreferrer",
                         className:
-                          'block border rounded-lg overflow-hidden hover:border-primary hover:shadow-lg transition-all cursor-pointer group',
+                          "block border rounded-lg overflow-hidden hover:border-primary hover:shadow-lg transition-all cursor-pointer group",
                       }
                     : {
-                        className: 'border rounded-lg overflow-hidden',
+                        className: "border rounded-lg overflow-hidden",
                       };
 
                   return (
@@ -846,20 +904,15 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                             {project.name}
                           </h3>
                           {project.url && !project.deployedUrl && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <a
-                                  href={project.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-muted-foreground hover:text-primary transition-colors"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <ExternalLink className="h-4 w-4" />
-                                </a>
-                              </TooltipTrigger>
-                              <TooltipContent>Visit project</TooltipContent>
-                            </Tooltip>
+                            <a
+                              href={project.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-muted-foreground hover:text-primary transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -905,7 +958,7 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
                               }
                             }}
                           >
-                            {companies[project.companyId]?.name.split(' ')[0]}
+                            {companies[project.companyId]?.name.split(" ")[0]}
                           </Badge>
                         </div>
                       </div>
