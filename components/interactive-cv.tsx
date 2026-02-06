@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
 import Fuse from "fuse.js";
 import {
   Mail,
@@ -18,6 +19,9 @@ import {
   X,
   Search,
   ChevronsUpDown,
+  Moon,
+  Sun,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +44,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import type { CVData, Project } from "@/lib/types";
 
@@ -49,6 +60,7 @@ interface InteractiveCVProps {
 }
 
 export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
+  const { theme, setTheme } = useTheme();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -292,52 +304,50 @@ export function InteractiveCV({ cvData, projects }: InteractiveCVProps) {
   return (
     <TooltipProvider>
       <main className="min-h-screen bg-muted py-8 px-4 print:bg-background print:py-0">
-        {/* Floating Action Bar */}
+        {/* Floating Action Bar - Minimal Design */}
         <div
           className={`fixed top-4 right-4 flex gap-2 print:hidden z-50 transition-opacity duration-200 ${
             showProjects ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant={showProjects ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowProjects(!showProjects)}
-                className="bg-background shadow-md"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Projects
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Toggle Projects Panel</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
+          <Button
+            variant={showProjects ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowProjects(!showProjects)}
+            className="bg-background shadow-md"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Projects
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                onClick={handlePrint}
                 className="bg-background shadow-md"
               >
-                <Printer className="h-4 w-4" />
+                <MoreVertical className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>Print CV</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleDownload}
-                className="bg-background shadow-md"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handlePrint}>
+                <Printer className="h-4 w-4 mr-2" />
+                Print CV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDownload}>
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
-                <Download className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Download as PDF</TooltipContent>
-          </Tooltip>
+                <Sun className="h-4 w-4 mr-2 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 ml-0 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="ml-6">{theme === "dark" ? "Light" : "Dark"} Mode</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="mx-auto max-w-[850px] bg-background shadow-lg print:shadow-none">

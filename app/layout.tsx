@@ -1,6 +1,7 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { EB_Garamond, Great_Vibes } from 'next/font/google'
+import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
 
@@ -27,8 +28,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ebGaramond.variable} ${greatVibes.variable} font-serif antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${ebGaramond.variable} ${greatVibes.variable} font-serif antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
